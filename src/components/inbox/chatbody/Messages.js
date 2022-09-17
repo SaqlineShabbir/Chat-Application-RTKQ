@@ -1,8 +1,32 @@
+import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { messagesApi } from '../../../features/messages/messagesApi';
 import Message from './Message';
 
-export default function Messages({ messages = [] }) {
+export default function Messages({ messages = [], totalCount, id }) {
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const dispatch = useDispatch();
+  const fetchMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+  useEffect(() => {
+    if (page > 1) {
+      dispatch(messagesApi.endpoints.getMoreMessages.initiate({ id, page }));
+    }
+  }, [page, id, dispatch]);
+  useEffect(() => {
+    if (totalCount > 0) {
+      const more =
+        Math.ceil(
+          totalCount / Number(process.env.REACT_APP_MESSAGES_PER_PAGE)
+        ) > page;
+      setHasMore(more);
+      console.log(page);
+    }
+  }, [totalCount, page]);
+  console.log(page);
   const { user } = useSelector((state) => state.auth) || {};
   const { email } = user || {};
   let uniqueMessages = messages.reduce((unique, o) => {
@@ -11,23 +35,26 @@ export default function Messages({ messages = [] }) {
     }
     return unique;
   }, []);
-
+  console.log(totalCount, 'frommessa');
   return (
     <div className="relative w-full h-[calc(100vh_-_197px)] p-6  flex flex-col-reverse">
       <ul className="space-y-2">
         <InfiniteScroll
-          dataLength={messages?.length}
-          next={() => console.log('fetching')}
-          //To put endMessage and loader to the top.
-          //
-          hasMore={true}
+          style={{
+            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column-reverse',
+          }}
+          dataLength={uniqueMessages?.length}
+          next={fetchMore}
+          hasMore={hasMore}
           loader={<h4>Loading...</h4>}
           scrollableTarget="scrollableDiv"
-          height={window.innerHeight - 197}
+          height={window.innerHeight - 220}
         >
           {uniqueMessages
             .slice()
-            .sort((a, b) => a.timestamp - b.timestamp)
+            .sort((a, b) => b.timestamp - a.timestamp)
             .map((message) => {
               const { message: lastMessage, id, sender } = message || {};
 
