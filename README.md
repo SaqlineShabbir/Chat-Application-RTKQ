@@ -1,5 +1,12 @@
 # Project Plan - Chat Application with RTK Query
 
+## users
+
+1.admin@admin.com
+password : 123456
+
+2.create another user and send message then to check live chating open the application in to tap with different user
+
 ## Requirement Analysis
 
 1. user can register. afer registering, user will be automatically logged in, we will store login info to localstorage (for login persistance) and redirected to inbox page
