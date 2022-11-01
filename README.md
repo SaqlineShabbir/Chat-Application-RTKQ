@@ -5,7 +5,7 @@
 1.admin@admin.com
 password : 123456
 
-2.create another user and send message then to check live chating open the application in to tap with different user
+2.create another user and send message then to check live chatting open the application in to tab with different user
 
 ## Requirement Analysis
 
